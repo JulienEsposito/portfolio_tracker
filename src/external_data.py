@@ -40,7 +40,7 @@ def get_crypto_prices(fsyms, tsyms):
     
 
 def exit_target(portfolio_sheet, df_crypto):
-    target = portfolio_sheet.get('AB9:AE35')
+    target = portfolio_sheet.get('AC9:AF35')
     df_target = pd.DataFrame(target)
     df_target['crypto'] = df_crypto.index
 
