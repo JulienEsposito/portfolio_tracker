@@ -13,24 +13,28 @@ def selling_range(portfolio_sheet, df_crypto):
     selling_range_1 = {}
     for crypto, value in df_target[df_target['25%'] != '-'].set_index('crypto')['25%'].to_dict().items():
         if value != '-':
+            value = value.replace(',', '.')
             value = float(value)
             selling_range_1[crypto] = (value, value * 1.05)
 
     selling_range_2 = {}
     for crypto, value in df_target[df_target['50%'] != '-'].set_index('crypto')['50%'].to_dict().items():
         if value != '-':
+            value = value.replace(',', '.')
             value = float(value)
             selling_range_2[crypto] = (value, value * 1.05)
 
     selling_range_3 = {}
     for crypto, value in df_target[df_target['75%'] != '-'].set_index('crypto')['75%'].to_dict().items():
         if value != '-':
+            value = value.replace(',', '.')
             value = float(value)
             selling_range_3[crypto] = (value, value * 1.05)
 
     selling_range_4 = {}
     for crypto, value in df_target[df_target['100%'] != '-'].set_index('crypto')['100%'].to_dict().items():
         if value != '-':
+            value = value.replace(',', '.')
             value = float(value)
             selling_range_4[crypto] = (value, value * 1.05)
 
