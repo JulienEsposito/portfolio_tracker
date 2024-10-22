@@ -2,13 +2,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import requests
 import pandas as pd
-import datetime
-import json
-from collections import defaultdict
 
-from src.config import CRYPTO, CURRENCY
-from src.config_private import BASE_URL, API_KEY, CHAT_ID
-
+from src.config_private import BASE_URL, API_KEY 
 
 def get_portfolio_sheet(json_file):
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -23,9 +18,9 @@ def get_portfolio_sheet(json_file):
 
 
 
-def get_crypto_prices(fsyms, tsyms):   
+def get_stock_prices(STOCK, CURRENCY):   
     params = {
-        "fsyms": CRYPTO,
+        "fsyms": STOCK,
         "tsyms": CURRENCY,
         "api_key": API_KEY
     }
@@ -39,12 +34,12 @@ def get_crypto_prices(fsyms, tsyms):
         return None
     
 
-def exit_target(portfolio_sheet, df_crypto):
-    target = portfolio_sheet.get('AC9:AF32')
+def exit_target(portfolio_sheet, df_stock):
+    target = portfolio_sheet.get('AC9:AF26')
     df_target = pd.DataFrame(target)
-    df_target['crypto'] = df_crypto.index
+    df_target['stock'] = df_stock.index
 
-    df_target.columns = ['25%', '50%', '75%', '100%', 'crypto']
+    df_target.columns = ['25%', '50%', '75%', '100%', 'stock']
 
     return df_target
 
