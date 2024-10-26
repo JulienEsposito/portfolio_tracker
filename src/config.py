@@ -1,4 +1,5 @@
 import telebot
+import os
 #from src.config_private import TELEGRAM_TOKEN
 
 CURRENCY = "USD"
