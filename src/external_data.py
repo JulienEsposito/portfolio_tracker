@@ -3,6 +3,7 @@ import gspread
 import requests
 import pandas as pd
 
+from src.config import BASE_URL, API_KEY 
 #from src.config_private import BASE_URL, API_KEY 
 
 def get_portfolio_sheet(json_file):
