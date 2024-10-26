@@ -2,7 +2,7 @@ name: Run main.py every 5 minutes
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/4 * * * *"
 
 jobs:
   run-script:
