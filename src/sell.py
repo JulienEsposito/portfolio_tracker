@@ -3,7 +3,7 @@ import json
 from collections import defaultdict
 
 from src.config import bot
-from src.config_private import json_file, CHAT_ID
+#from src.config_private import json_file, CHAT_ID
 from src.external_data import exit_target, get_portfolio_sheet
 
 
