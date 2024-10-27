@@ -3,7 +3,7 @@ name: Run main.py every 5 minutes
 on:
   schedule:
     - cron: "*/4 * * * *"
-  workflow_dispatch:  # Permet de lancer manuellement
+  workflow_dispatch:  # Permet le déclenchement manuel
 
 jobs:
   run-script:
@@ -26,11 +26,12 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 --decode > credentials.json
 
-      - name: Download last_sent_messages.json artifact
-        uses: actions/download-artifact@v3
+      - name: Restore last_sent_messages.json from cache
+        id: cache-last-sent
+        uses: actions/cache@v3
         with:
-          name: last_sent_messages
-        continue-on-error: true  
+          path: last_sent_messages.json
+          key: last-sent-messages-cache
 
       - name: Run main.py
         run: python main.py
@@ -41,12 +42,12 @@ jobs:
           STOCK: ${{ secrets.STOCK }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
-      - name: Upload last_sent_messages.json artifact
-        if: success()  # Upload uniquement si le script a réussi
-        uses: actions/upload-artifact@v3
+      - name: Update last_sent_messages.json cache
+        if: steps.cache-last-sent.outputs.cache-hit != 'true'
+        uses: actions/cache@v3
         with:
-          name: last_sent_messages
           path: last_sent_messages.json
+          key: last-sent-messages-cache
 
       - name: Clean up
         run: rm credentials.json
