@@ -2,7 +2,8 @@ name: Run main.py every 5 minutes
 
 on:
   schedule:
-    - cron: "*/1 * * * *"
+    - cron: "*/4 * * * *"
+  workflow_dispatch:
 
 jobs:
   run-script:
