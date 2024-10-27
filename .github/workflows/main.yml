@@ -26,18 +26,17 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 --decode > credentials.json
 
+      - name: Download last_sent_messages.json artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: last_sent_messages
+        continue-on-error: true  
+        
       - name: Ensure last_sent_messages.json exists
         run: |
           if [ ! -f last_sent_messages.json ]; then
             echo '{}' > last_sent_messages.json
           fi
-
-      - name: Restore last_sent_messages.json from cache
-        id: cache-last-sent
-        uses: actions/cache@v3
-        with:
-          path: last_sent_messages.json
-          key: last-sent-messages-cache-${{ github.run_id }}
 
       - name: Run main.py
         run: python main.py
@@ -48,11 +47,11 @@ jobs:
           STOCK: ${{ secrets.STOCK }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
-      - name: Update last_sent_messages.json cache
-        uses: actions/cache@v3
+      - name: Upload updated last_sent_messages.json
+        uses: actions/upload-artifact@v3
         with:
+          name: last_sent_messages
           path: last_sent_messages.json
-          key: last-sent-messages-cache-${{ github.run_id }}
 
       - name: Clean up
         run: rm credentials.json
