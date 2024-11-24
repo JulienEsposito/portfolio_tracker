@@ -113,7 +113,7 @@ def _save_last_sent_messages(last_sent_messages):
 
 # Exemple d'utilisation dans la fonction check_stock_price_range
 def check_stock_price_range(df_stock):
-    portfolio_sheet = get_portfolio_sheet(2)
+    portfolio_sheet = get_portfolio_sheet(1)
     selling_range_1, selling_range_2, selling_range_3, selling_range_4 = _selling_range(portfolio_sheet, df_stock)
     current_time = datetime.now()
 
