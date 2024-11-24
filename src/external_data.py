@@ -6,7 +6,7 @@ import pandas as pd
 from src.config import BASE_URL, API_KEY 
 #from src.config_private import BASE_URL, API_KEY 
 
-def get_portfolio_sheet():
+def get_portfolio_sheet(page):
     json_file = "credentials.json"
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
@@ -14,7 +14,7 @@ def get_portfolio_sheet():
     client = gspread.authorize(credentials)
 
     spreadsheet = client.open('cap')
-    portfolio_sheet = spreadsheet.get_worksheet(1)
+    portfolio_sheet = spreadsheet.get_worksheet(page)
 
     return portfolio_sheet
 
@@ -37,7 +37,7 @@ def get_stock_prices(STOCK, CURRENCY):
     
 
 def exit_target(portfolio_sheet, df_stock):
-    target = portfolio_sheet.get('AC9:AF26')
+    target = portfolio_sheet.get('AD9:AG26')
     df_target = pd.DataFrame(target)
     df_target['stock'] = df_stock.index
 

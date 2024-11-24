@@ -54,24 +54,66 @@ def _dict_with_datetimes(dct):
 def _dict_to_defaultdict(dct):
     return defaultdict(dict, dct)
 
-def _load_last_sent_messages():
-    try:
-        with open('last_sent_messages.json', 'r') as f:
-            dct = json.load(f, object_hook=_dict_with_datetimes)
-            return _dict_to_defaultdict(dct)
-    except FileNotFoundError:
-        return defaultdict(dict)
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Fonction pour accéder à la feuille de calcul spécifiée
+def get_last_messages_sent_sheet():
+    json_file = "credentials.json"
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
+
+    client = gspread.authorize(credentials)
+    spreadsheet = client.open('cap')
     
+    # Accéder à la feuille 3 (nommée "last_messages_sent")
+    last_messages_sent_sheet = spreadsheet.get_worksheet(2)
+    
+    return last_messages_sent_sheet
 
+# Fonction pour charger les messages envoyés depuis la feuille de calcul
+def _load_last_sent_messages():
+    last_messages_sent_sheet = get_last_messages_sent_sheet()
+    records = last_messages_sent_sheet.get_all_records()  # Récupérer toutes les données sous forme de liste de dictionnaires
+    
+    last_sent_messages = defaultdict(dict)
+    
+    # Convertir les données en un dictionnaire imbriqué pour faciliter la manipulation
+    for record in records:
+        stock = record.get('stock')
+        range_str = record.get('range')
+        last_sent_time = record.get('last_sent_time')
+        
+        if last_sent_time:
+            last_sent_time = datetime.fromisoformat(last_sent_time)
+        
+        last_sent_messages[stock][range_str] = last_sent_time
+    
+    return last_sent_messages
+
+# Fonction pour enregistrer les messages envoyés dans la feuille de calcul
 def _save_last_sent_messages(last_sent_messages):
-    with open('last_sent_messages.json', 'w') as f:
-        json.dump({stock: {range_str: last_sent_time.isoformat() if last_sent_time else None
-                             for range_str, last_sent_time in ranges.items()}
-                   for stock, ranges in last_sent_messages.items()}, f, indent=4)
+    last_messages_sent_sheet = get_last_messages_sent_sheet()
+    
+    # Nettoyer la feuille avant d'écrire
+    last_messages_sent_sheet.clear()
+    
+    # Préparer les données sous forme de liste de dictionnaires
+    records = []
+    for stock, ranges in last_sent_messages.items():
+        for range_str, last_sent_time in ranges.items():
+            records.append({
+                'stock': stock,
+                'range': range_str,
+                'last_sent_time': last_sent_time.isoformat() if last_sent_time else None
+            })
+    
+    # Écrire les données dans la feuille de calcul
+    last_messages_sent_sheet.update([['stock', 'range', 'last_sent_time']] + [[r['stock'], r['range'], r['last_sent_time']] for r in records])
 
-
+# Exemple d'utilisation dans la fonction check_stock_price_range
 def check_stock_price_range(df_stock):
-    portfolio_sheet = get_portfolio_sheet()
+    portfolio_sheet = get_portfolio_sheet(2)
     selling_range_1, selling_range_2, selling_range_3, selling_range_4 = _selling_range(portfolio_sheet, df_stock)
     current_time = datetime.now()
 
@@ -116,5 +158,5 @@ def check_stock_price_range(df_stock):
                 if not last_sent_time or (current_time - last_sent_time).days >= 3:
                     bot.send_message(CHAT_ID, message)
                     last_sent_messages[stock]['Range 4'] = current_time
-                    
+
     _save_last_sent_messages(last_sent_messages)
