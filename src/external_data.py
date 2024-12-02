@@ -3,8 +3,8 @@ import gspread
 import requests
 import pandas as pd
 
-from gh_secrets import BASE_URL, API_KEY
-from config import SPREADSHEET_NAME, TARGET_RANGE, TARGET_COL 
+from src.gh_secrets import BASE_URL, API_KEY
+from src.config import SPREADSHEET_NAME, TARGET_RANGE, TARGET_COL 
 
 def get_portfolio_sheet(page):
     json_file = "credentials.json"
