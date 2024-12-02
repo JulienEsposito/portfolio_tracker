@@ -1,16 +1,18 @@
 import telebot
-import os
-
-CURRENCY = "USD"
-
-API_KEY = os.getenv('API_KEY')
-BASE_URL = os.getenv('BASE_URL')
-CHAT_ID = os.getenv('CHAT_ID')
-json_file = os.getenv('JSON_FILE')
-STOCK = os.getenv('STOCK')
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+from gh_secrets import TELEGRAM_TOKEN
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
+CURRENCY = "USD"
 
+SPREADSHEET_NAME = 'cap'
+TARGET_RANGE = 'AD9:AG26'
 
+TARGET_COL = ['25%', '50%', '75%', '100%', 'stock']
+TARGET_1 = '25%'
+TARGET_2 = '50%'
+TARGET_3 = '75%'
+TARGET_4 = '100%'
+
+MARGIN = 1.05
+MUTE_DAYS = 3
