@@ -3,8 +3,8 @@ from collections import defaultdict
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-from src.config import bot
-from src.config import CHAT_ID
+from gh_secrets import bot, CHAT_ID
+from config import TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
 from src.external_data import exit_target, get_portfolio_sheet
 
 
@@ -13,32 +13,32 @@ def _selling_range(portfolio_sheet, df_stock):
     df_target = exit_target(portfolio_sheet, df_stock)
 
     selling_range_1 = {}
-    for stock, value in df_target[df_target['25%'] != '-'].set_index('stock')['25%'].to_dict().items():
+    for stock, value in df_target[df_target[TARGET_1] != '-'].set_index('stock')[TARGET_1].to_dict().items():
         if value != '-':
             value = value.replace(',', '.')
             value = float(value)
-            selling_range_1[stock] = (value, value * 1.05)
+            selling_range_1[stock] = (value, value * MARGIN)
 
     selling_range_2 = {}
-    for stock, value in df_target[df_target['50%'] != '-'].set_index('stock')['50%'].to_dict().items():
+    for stock, value in df_target[df_target[TARGET_2] != '-'].set_index('stock')[TARGET_2].to_dict().items():
         if value != '-':
             value = value.replace(',', '.')
             value = float(value)
-            selling_range_2[stock] = (value, value * 1.05)
+            selling_range_2[stock] = (value, value * MARGIN)
 
     selling_range_3 = {}
-    for stock, value in df_target[df_target['75%'] != '-'].set_index('stock')['75%'].to_dict().items():
+    for stock, value in df_target[df_target[TARGET_3] != '-'].set_index('stock')[TARGET_3].to_dict().items():
         if value != '-':
             value = value.replace(',', '.')
             value = float(value)
-            selling_range_3[stock] = (value, value * 1.05)
+            selling_range_3[stock] = (value, value * MARGIN)
 
     selling_range_4 = {}
-    for stock, value in df_target[df_target['100%'] != '-'].set_index('stock')['100%'].to_dict().items():
+    for stock, value in df_target[df_target[TARGET_4] != '-'].set_index('stock')[TARGET_4].to_dict().items():
         if value != '-':
             value = value.replace(',', '.')
             value = float(value)
-            selling_range_4[stock] = (value, value * 1.05)
+            selling_range_4[stock] = (value, value * MARGIN)
 
     return selling_range_1, selling_range_2, selling_range_3, selling_range_4
 
@@ -49,7 +49,7 @@ def get_last_messages_sent_sheet():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
 
     client = gspread.authorize(credentials)
-    spreadsheet = client.open('cap')
+    spreadsheet = client.open(SPREADSHEET_NAME)
     
     last_messages_sent_sheet = spreadsheet.get_worksheet(2)
     
@@ -97,41 +97,41 @@ def check_stock_price_range(df_stock):
 
     for stock, price_range in selling_range_1.items():
         if stock in df_stock.index:
-            price = df_stock.loc[stock, 'USD']
+            price = df_stock.loc[stock, CURRENCY]
             if price_range[0] <= price <= price_range[1]:
-                message = f"Range 1: The {stock} is in the selling range 25%. Current price: {price}"
+                message = f"Range 1: The {stock} is in the selling range {TARGET_1}. Current price: {price}"
                 last_sent_time = last_sent_messages[stock].get('Range 1')
-                if not last_sent_time or (current_time - last_sent_time).days >= 3:
+                if not last_sent_time or (current_time - last_sent_time).days >= MUTE_DAYS:
                     bot.send_message(CHAT_ID, message)
                     last_sent_messages[stock]['Range 1'] = current_time
 
     for stock, price_range in selling_range_2.items():
         if stock in df_stock.index:
-            price = df_stock.loc[stock, 'USD']
+            price = df_stock.loc[stock, CURRENCY]
             if price_range[0] <= price <= price_range[1]:
-                message = f"Range 2: The {stock} is in the selling range 50%. Current price: {price}"
+                message = f"Range 2: The {stock} is in the selling range {TARGET_2}. Current price: {price}"
                 last_sent_time = last_sent_messages[stock].get('Range 2')
-                if not last_sent_time or (current_time - last_sent_time).days >= 3:
+                if not last_sent_time or (current_time - last_sent_time).days >= MUTE_DAYS:
                     bot.send_message(CHAT_ID, message)
                     last_sent_messages[stock]['Range 2'] = current_time
 
     for stock, price_range in selling_range_3.items():
         if stock in df_stock.index:
-            price = df_stock.loc[stock, 'USD']
+            price = df_stock.loc[stock, CURRENCY]
             if price_range[0] <= price <= price_range[1]:
-                message = f"Range 3: The {stock} is in the selling range 75%. Current price: {price}"
+                message = f"Range 3: The {stock} is in the selling range {TARGET_3}. Current price: {price}"
                 last_sent_time = last_sent_messages[stock].get('Range 3')
-                if not last_sent_time or (current_time - last_sent_time).days >= 3:
+                if not last_sent_time or (current_time - last_sent_time).days >= MUTE_DAYS:
                     bot.send_message(CHAT_ID, message)
                     last_sent_messages[stock]['Range 3'] = current_time
 
     for stock, price_range in selling_range_4.items():
         if stock in df_stock.index:
-            price = df_stock.loc[stock, 'USD']
+            price = df_stock.loc[stock, CURRENCY]
             if price_range[0] <= price <= price_range[1]:
-                message = f"Range 4: The {stock} is in the selling range 100%. Current price: {price}"
+                message = f"Range 4: The {stock} is in the selling range {TARGET_4}. Current price: {price}"
                 last_sent_time = last_sent_messages[stock].get('Range 4')
-                if not last_sent_time or (current_time - last_sent_time).days >= 3:
+                if not last_sent_time or (current_time - last_sent_time).days >= MUTE_DAYS:
                     bot.send_message(CHAT_ID, message)
                     last_sent_messages[stock]['Range 4'] = current_time
 
