@@ -1,5 +1,5 @@
 import telebot
-from gh_secrets import TELEGRAM_TOKEN
+from src.gh_secrets import TELEGRAM_TOKEN
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 

@@ -3,8 +3,8 @@ from collections import defaultdict
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-from gh_secrets import bot, CHAT_ID
-from config import TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
+from src.gh_secrets import bot, CHAT_ID
+from src.config import TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
 from src.external_data import exit_target, get_portfolio_sheet
 
 
