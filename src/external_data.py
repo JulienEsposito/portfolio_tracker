@@ -22,6 +22,7 @@ def get_portfolio_sheet(page):
 
 def get_stock_prices(STOCK, CURRENCY):   
     params = {
+        print('STOCK', STOCK)
         "fsyms": STOCK,
         "tsyms": CURRENCY,
         "api_key": API_KEY
