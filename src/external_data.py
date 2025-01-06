@@ -22,7 +22,6 @@ def get_portfolio_sheet(page):
 
 def get_stock_prices(STOCK, CURRENCY):   
     params = {
-        print(STOCK)
         "fsyms": STOCK,
         "tsyms": CURRENCY,
         "api_key": API_KEY
@@ -40,10 +39,7 @@ def get_stock_prices(STOCK, CURRENCY):
 def exit_target(portfolio_sheet, df_stock):
     target = portfolio_sheet.get(TARGET_RANGE)
     df_target = pd.DataFrame(target)
-    print('df_target',df_target.head(20))
-    print('df_stock index', df_stock.index)
     df_target['stock'] = df_stock.index
-    print('df_target stock col', df_target['stock'].head(20))
 
     df_target.columns = TARGET_COL 
 
