@@ -36,7 +36,7 @@ def get_stock_prices(STOCK, CURRENCY):
         return None
     
 
-def exit_target(portfolio_sheet, df_stock):
+'''def exit_target(portfolio_sheet, df_stock):
     target = portfolio_sheet.get(TARGET_RANGE)
     df_target = pd.DataFrame(target)
     df_target['stock'] = df_stock.index
@@ -44,4 +44,18 @@ def exit_target(portfolio_sheet, df_stock):
     df_target.columns = TARGET_COL 
 
     return df_target
+'''
+def exit_target(portfolio_sheet, df_stock):
+    target = portfolio_sheet.get(TARGET_RANGE)
+    df_target = pd.DataFrame(target)
+    df_target['stock'] = df_stock.index
 
+    if len(TARGET_COL) != len(df_target.columns):
+        raise ValueError(
+            f"Mismatch between the number of columns in TARGET_COL ({len(TARGET_COL)}) "
+            f"and df_target ({len(df_target.columns)}). Check your configuration or input data."
+        )
+
+    df_target.columns = TARGET_COL 
+
+    return df_target
