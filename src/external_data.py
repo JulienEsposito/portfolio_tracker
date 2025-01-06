@@ -52,8 +52,8 @@ def exit_target(portfolio_sheet, df_stock):
 
     if len(TARGET_COL) != len(df_target.columns):
         raise ValueError(
-            f"Mismatch between the number of columns in TARGET_COL ({len(TARGET_COL)}) "
-            f"and df_target ({len(df_target.columns)}). Check your configuration or input data."
+            f"Mismatch between the number of columns in TARGET_COL ({len(TARGET_COL)}, {print(TARGET_COL)}) "
+            f"and df_target ({len(df_target.columns)}, {print(df_target.columns)}). Check your configuration or input data."
         )
 
     df_target.columns = TARGET_COL 
