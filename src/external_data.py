@@ -44,4 +44,3 @@ def exit_target(portfolio_sheet, df_stock):
     df_target.columns = TARGET_COL 
 
     return df_target
-
