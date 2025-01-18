@@ -4,8 +4,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 from src.gh_secrets import CHAT_ID
-from src.config import bot, TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
-from src.external_data import exit_target, get_portfolio_sheet
+from portfolio_tracker.config import bot, TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
+from portfolio_tracker.external_data import exit_target, get_portfolio_sheet
 
 
 
