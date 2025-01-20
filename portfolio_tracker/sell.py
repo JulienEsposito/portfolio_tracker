@@ -142,14 +142,6 @@ def check_stock_price_range(df_stock):
 ##########################
 
 
-from datetime import datetime
-from collections import defaultdict
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from src.gh_secrets import CHAT_ID
-from portfolio_tracker.config import bot, TARGETS, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
-from portfolio_tracker.external_data import exit_target, get_portfolio_sheet
-
 def _selling_range(portfolio_sheet, df_stock):
     ranges = {}
     df_target = exit_target(portfolio_sheet, df_stock)
