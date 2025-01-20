@@ -212,7 +212,7 @@ def check_stock_price_range(df_stock):
             if stock in df_stock.index:
                 price = df_stock.loc[stock, CURRENCY]
                 if price_range[0] <= price <= price_range[1]:
-                    message = f"{target}: The {stock} is in the selling range {target}. Current price: {price}"
+                    message = f"{stock} reach the price {price} you have to sell {target}"
                     last_sent_time = last_sent_messages[stock].get(target)
                     if not last_sent_time or (current_time - last_sent_time).days >= MUTE_DAYS:
                         bot.send_message(CHAT_ID, message)
