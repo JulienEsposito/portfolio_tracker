@@ -8,7 +8,7 @@ from portfolio_tracker.config import bot, TARGET_1, TARGET_2, TARGET_3, TARGET_4
 from portfolio_tracker.external_data import exit_target, get_portfolio_sheet
 
 
-
+'''
 def _selling_range(portfolio_sheet, df_stock):
     df_target = exit_target(portfolio_sheet, df_stock)
 
@@ -134,5 +134,100 @@ def check_stock_price_range(df_stock):
                 if not last_sent_time or (current_time - last_sent_time).days >= MUTE_DAYS:
                     bot.send_message(CHAT_ID, message)
                     last_sent_messages[stock]['Range 4'] = current_time
+
+    _save_last_sent_messages(last_sent_messages)
+'''
+
+
+##########################
+
+
+
+from datetime import datetime
+from collections import defaultdict
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+from src.gh_secrets import CHAT_ID
+from portfolio_tracker.config import bot, TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
+from portfolio_tracker.external_data import exit_target, get_portfolio_sheet
+
+
+def _get_selling_ranges(portfolio_sheet, df_stock, targets):
+    selling_ranges = {}
+    df_target = exit_target(portfolio_sheet, df_stock)
+
+    for target in targets:
+        target_dict = df_target[df_target[target] != '-'].set_index('stock')[target].to_dict()
+        selling_ranges[target] = {
+            stock: (float(value.replace(',', '.')), float(value.replace(',', '.')) * MARGIN)
+            for stock, value in target_dict.items()
+            if value != '-'
+        }
+
+    return selling_ranges
+
+def get_last_messages_sent_sheet():
+    json_file = "credentials.json"
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
+
+    client = gspread.authorize(credentials)
+    spreadsheet = client.open(SPREADSHEET_NAME)
+    
+    return spreadsheet.get_worksheet(2)
+
+def _load_last_sent_messages():
+    last_messages_sent_sheet = get_last_messages_sent_sheet()
+    records = last_messages_sent_sheet.get_all_records()
+
+    return {
+        record['stock']: {
+            record['range']: datetime.fromisoformat(record['last_sent_time']) if record['last_sent_time'] else None
+            for record in records
+        }
+        for record in records
+    }
+
+def _save_last_sent_messages(last_sent_messages):
+    last_messages_sent_sheet = get_last_messages_sent_sheet()
+    last_messages_sent_sheet.clear()
+
+    records = [
+        {
+            'stock': stock,
+            'range': range_str,
+            'last_sent_time': last_sent_time.isoformat() if last_sent_time else None
+        }
+        for stock, ranges in last_sent_messages.items()
+        for range_str, last_sent_time in ranges.items()
+    ]
+
+    last_messages_sent_sheet.update([
+        ['stock', 'range', 'last_sent_time']
+    ] + [[r['stock'], r['range'], r['last_sent_time']] for r in records])
+
+def _check_and_notify(stock, price, price_range, range_name, last_sent_messages, current_time):
+    if price_range[0] <= price <= price_range[1]:
+        message = f"{range_name}: The {stock} is in the selling range. Current price: {price}"
+        last_sent_time = last_sent_messages[stock].get(range_name)
+
+        if not last_sent_time or (current_time - last_sent_time).days >= MUTE_DAYS:
+            bot.send_message(CHAT_ID, message)
+            last_sent_messages[stock][range_name] = current_time
+
+def check_stock_price_range(df_stock):
+    portfolio_sheet = get_portfolio_sheet(1)
+    targets = [TARGET_1, TARGET_2, TARGET_3, TARGET_4]
+    selling_ranges = _get_selling_ranges(portfolio_sheet, df_stock, targets)
+    current_time = datetime.now()
+
+    last_sent_messages = _load_last_sent_messages()
+
+    for stock, ranges in selling_ranges.items():
+        for target, price_range in ranges.items():
+            if stock in df_stock.index:
+                price = df_stock.loc[stock, CURRENCY]
+                _check_and_notify(stock, price, price_range, target, last_sent_messages, current_time)
 
     _save_last_sent_messages(last_sent_messages)
