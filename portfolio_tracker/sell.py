@@ -141,6 +141,7 @@ def check_stock_price_range(df_stock):
 
 ##########################
 
+TARGETS = [TARGET_1, TARGET_2, TARGET_3, TARGET_4]
 
 def _selling_range(portfolio_sheet, df_stock):
     ranges = {}
