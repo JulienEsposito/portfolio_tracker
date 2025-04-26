@@ -27,7 +27,7 @@ jobs:
           echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 --decode > credentials.json
 
       - name: Download last_sent_messages.json artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: last_sent_messages
         continue-on-error: true  
@@ -48,7 +48,7 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
       - name: Upload updated last_sent_messages.json
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: last_sent_messages
           path: last_sent_messages.json
