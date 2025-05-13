@@ -67,7 +67,7 @@ def _save_last_sent_messages(last_sent_messages):
     last_messages_sent_sheet.update([['stock', 'range', 'last_sent_time']] + [[r['stock'], r['range'], r['last_sent_time']] for r in records])
 
 def check_stock_price_range(df_stock):
-    portfolio_sheet = get_portfolio_sheet(1)
+    portfolio_sheet = get_portfolio_sheet(3)
     selling_ranges = _selling_range(portfolio_sheet, df_stock)
     current_time = datetime.now()
 

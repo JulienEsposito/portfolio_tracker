@@ -6,7 +6,7 @@ bot = telebot.TeleBot(TELEGRAM_TOKEN)
 CURRENCY = "USD"
 
 SPREADSHEET_NAME = 'cap'
-TARGET_RANGE = 'AD9:AG25'
+TARGET_RANGE = 'D8:G19'
 
 TARGET_COL = ['25%', '50%', '75%', '100%', 'stock']
 TARGET_1 = '25%'
