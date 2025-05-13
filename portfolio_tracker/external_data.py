@@ -48,7 +48,7 @@ def exit_target(portfolio_sheet, df_stock):
 
 def get_stocks():
     sheet = get_portfolio_sheet(SHEET_DASHBOARD)
-    cells = sheet.get(STOCK_RANGE)
+    cells = sheet.get(STOCKS_RANGE)
     values = []
 
     for row in cells:
