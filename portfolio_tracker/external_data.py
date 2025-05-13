@@ -4,9 +4,9 @@ import requests
 import pandas as pd
 
 from src.gh_secrets import BASE_URL, API_KEY
-from portfolio_tracker.config import SPREADSHEET_NAME, TARGET_RANGE, TARGET_COL 
+from portfolio_tracker.config import SPREADSHEET_NAME, TARGET_RANGE, STOCKS_RANGE, TARGET_COL, SHEET_DASHBOARD
 
-def get_portfolio_sheet(page):
+def get_portfolio_sheet(sheet):
     json_file = "credentials.json"
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
@@ -14,7 +14,7 @@ def get_portfolio_sheet(page):
     client = gspread.authorize(credentials)
 
     spreadsheet = client.open(SPREADSHEET_NAME)
-    portfolio_sheet = spreadsheet.get_worksheet(page)
+    portfolio_sheet = spreadsheet.get_worksheet(sheet)
 
     return portfolio_sheet
 
@@ -44,3 +44,16 @@ def exit_target(portfolio_sheet, df_stock):
     df_target.columns = TARGET_COL 
 
     return df_target
+
+
+def get_stocks():
+    sheet = get_portfolio_sheet(SHEET_DASHBOARD)
+    cells = sheet.get(STOCK_RANGE)
+    values = []
+
+    for row in cells:
+        if not row or row[0].strip() == '':
+            break
+        values.append(row[0].strip())
+
+    return ','.join(values)
