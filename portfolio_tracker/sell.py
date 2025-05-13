@@ -4,7 +4,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 from src.gh_secrets import CHAT_ID
-from portfolio_tracker.config import bot, TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS
+from portfolio_tracker.config import bot, TARGET_1, TARGET_2, TARGET_3, TARGET_4, MARGIN, SPREADSHEET_NAME, CURRENCY, MUTE_DAYS, SHEET_STRATEGY
 from portfolio_tracker.external_data import exit_target, get_portfolio_sheet
 
 TARGETS = [TARGET_1, TARGET_2, TARGET_3, TARGET_4]
@@ -67,7 +67,7 @@ def _save_last_sent_messages(last_sent_messages):
     last_messages_sent_sheet.update([['stock', 'range', 'last_sent_time']] + [[r['stock'], r['range'], r['last_sent_time']] for r in records])
 
 def check_stock_price_range(df_stock):
-    portfolio_sheet = get_portfolio_sheet(1)
+    portfolio_sheet = get_portfolio_sheet(SHEET_STRATEGY)
     selling_ranges = _selling_range(portfolio_sheet, df_stock)
     current_time = datetime.now()
 
